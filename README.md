@@ -134,36 +134,6 @@ Senha: admin
 
 ---
 
-## 📁 Estrutura do Projeto
-
-```
-weather_pipeline/
-├── dags/
-│   └── weather_dag.py
-├── include/
-│   ├── constants.py
-│   ├── profiles.py
-│   └── src/
-│       ├── extract_data.py
-│       ├── load_raw.py
-│       └── load_to_bigquery.py
-├── dbt/
-│   └── weather_project/
-│       ├── models/
-│       │   ├── staging/
-│       │   │   └── stg_weather.sql
-│       │   ├── intermediate/
-│       │   │   └── int_weather_enriched.sql
-│       │   └── marts/
-│       │       └── dim_weather.sql
-│       ├── tests/
-│       │   └── stg_weather.yml
-│       └── sources.yml
-└── tests/
-```
-
----
-
 ## 📈 Modelagem de Dados
 
 ### 📌 Tabela Final – `dim_weather`
