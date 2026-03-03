@@ -176,11 +176,6 @@ Senha: admin
 * [ ] Configurar alertas de falha
 * [ ] Publicar documentação com dbt docs
 
----
-
-## 📝 Licença
-
-MIT License
 
 ---
 
@@ -190,7 +185,7 @@ MIT License
 Engenheira de Dados
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/Amandasanttiago)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge\&logo=linkedin\&logoColor=white)](https://linkedin.com/in/amanda-santiago)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge\&logo=linkedin\&logoColor=white)](https://linkedin.com/in/amanda-beatriz-data-cience)
 
 ---
 
