@@ -1,0 +1,16 @@
+services:
+  postgres_raw:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: raw_user
+      POSTGRES_PASSWORD: raw_pass
+      POSTGRES_DB: raw_db
+    ports:
+      - "5433:5432"
+    networks:
+      - airflow
+
+networks:
+  airflow:
+    external: true
+    name: weather_pipeline_7d1a14_airflow

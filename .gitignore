@@ -1,0 +1,58 @@
+.git
+.env
+.DS_Store
+airflow_settings.yaml
+__pycache__/
+astro
+.venv
+airflow-webserver.pid
+webserver_config.py
+airflow.cfg
+airflow.db
+
+target/
+dbt_packages/
+logs/
+# Service account key
+include/dbt/*.json
+# Google Cloud credentials
+*.json
+!service-account-template.json
+dags/dbt/weather_project/*.json
+
+# Environment variables
+.env
+*.env
+
+# Python cache
+__pycache__/
+*.pycdags/dbt/weather_project/*.json
+*.json
+*.json
+dags/dbt/weather_project/*.json
+
+__pycache__/
+*.py[cod]
+
+# Credentials
+*.json
+!service-account-template.json
+dags/dbt/weather_project/*.json
+*.key
+*.pem
+
+# Virtual environment
+dbt_venv/
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Airflow
+airflow.cfg
+airflow.db
+logs/
+EOF
+

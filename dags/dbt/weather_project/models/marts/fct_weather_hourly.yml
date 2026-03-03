@@ -1,0 +1,11 @@
+version : 2
+
+models:
+  - name: fct_weather_hourly
+    description: "Tabela fato da previsão histórica e com a previsão dos próximos 16 dias"
+    columns:
+      - name: id_weather
+        description: "ID da previsão do tempo"
+        data_tests:
+          - unique
+          - not_null
