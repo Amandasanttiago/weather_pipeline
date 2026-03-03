@@ -1,45 +1,227 @@
-Overview
-========
+# 🌤️ Weather Pipeline - Engenharia de Dados
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+![GitHub](https://img.shields.io/badge/license-MIT-blue)
+![Python](https://img.shields.io/badge/python-3.9%2B-green)
+![Airflow](https://img.shields.io/badge/Airflow-2.0%2B-red)
+![dbt](https://img.shields.io/badge/dbt-1.0%2B-orange)
+![BigQuery](https://img.shields.io/badge/BigQuery-Cloud-blue)
 
-Project Contents
-================
+---
 
-Your Astro project contains the following files and folders:
+## 📋 Sobre o Projeto
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+Pipeline de dados completo para coleta, processamento e análise de dados meteorológicos utilizando a API **Open-Meteo**.
 
-Deploy Your Project Locally
-===========================
+O projeto implementa uma arquitetura moderna com camadas **RAW, STAGING, INTERMEDIATE e MARTS**, seguindo boas práticas de engenharia de dados (ELT).
 
-Start Airflow on your local machine by running 'astro dev start'.
+---
 
-This command will spin up five Docker containers on your machine, each for a different Airflow component:
+## 🏗️ Arquitetura
 
-- Postgres: Airflow's Metadata Database
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
-- API Server: The Airflow component responsible for serving the Airflow UI and API
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+```
+API Open-Meteo 
+    ↓
+Airflow (Orquestração)
+    ↓
+PostgreSQL (RAW)
+    ↓
+BigQuery (Data Warehouse)
+    ↓
+dbt (Transformações)
+    ↓
+Dados Analíticos (MARTS)
+```
 
-When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
+---
 
-Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+## 🚀 Tecnologias Utilizadas
 
-Deploy Your Project to Astronomer
-=================================
+* **Apache Airflow** – Orquestração do pipeline
+* **Astro CLI** – Gerenciamento do ambiente Airflow
+* **PostgreSQL** – Camada RAW (Data Lake)
+* **Google BigQuery** – Data Warehouse
+* **dbt (Data Build Tool)** – Transformações e modelagem
+* **Cosmos** – Integração Airflow + dbt
+* **Docker** – Containerização
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+---
 
-Contact
-=======
+## 📊 Fluxo do Pipeline
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+### 1️⃣ Extract
+
+* Coleta dados da API Open-Meteo (temperatura, umidade, precipitação)
+* Previsão para 16 dias (Rio de Janeiro)
+* Validação e logging
+
+### 2️⃣ Load – Camada RAW
+
+* Inserção no PostgreSQL
+* Tabela `raw_weather` com estrutura JSONB
+* Controle de `ingestion_timestamp`
+
+### 3️⃣ Load – BigQuery
+
+* Transferência PostgreSQL → BigQuery
+* Dataset `weather_dataset`
+* Tabela `raw_weather`
+
+### 4️⃣ Transformações com dbt
+
+#### 🔹 Staging (`stg_weather`)
+
+* Parsing de timestamps
+* Extração de data e hora
+* Tratamento de tipos (CAST)
+* Cálculo de umidade percentual
+* Deduplicação
+
+#### 🔹 Intermediate (`int_weather_enriched`)
+
+* ID sequencial
+* Dia da semana (DOW)
+* Classificação por período do dia
+* Classificação de temperatura
+
+#### 🔹 Marts (`dim_weather`)
+
+* Modelo final para análise
+* Dados limpos, enriquecidos e prontos para BI
+
+---
+
+## 🔧 Configuração do Ambiente
+
+### Pré-requisitos
+
+* Docker + Docker Compose
+* Astro CLI
+* Conta Google Cloud com BigQuery ativado
+* Python 3.9+
+
+---
+
+### 📥 Instalação
+
+#### 1️⃣ Clone o repositório
+
+```bash
+git clone https://github.com/Amandasanttiago/weather_pipeline.git
+cd weather_pipeline
+```
+
+#### 2️⃣ Configure as credenciais
+
+Coloque sua chave JSON do Google Cloud em:
+
+```
+dags/dbt/weather_project/sua-chave.json
+```
+
+#### 3️⃣ Inicie o ambiente
+
+```bash
+astro dev start
+```
+
+#### 4️⃣ Acesse o Airflow
+
+```
+http://localhost:8080
+Usuário: admin
+Senha: admin
+```
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+weather_pipeline/
+├── dags/
+│   └── weather_dag.py
+├── include/
+│   ├── constants.py
+│   ├── profiles.py
+│   └── src/
+│       ├── extract_data.py
+│       ├── load_raw.py
+│       └── load_to_bigquery.py
+├── dbt/
+│   └── weather_project/
+│       ├── models/
+│       │   ├── staging/
+│       │   │   └── stg_weather.sql
+│       │   ├── intermediate/
+│       │   │   └── int_weather_enriched.sql
+│       │   └── marts/
+│       │       └── dim_weather.sql
+│       ├── tests/
+│       │   └── stg_weather.yml
+│       └── sources.yml
+└── tests/
+```
+
+---
+
+## 📈 Modelagem de Dados
+
+### 📌 Tabela Final – `dim_weather`
+
+| Coluna                    | Tipo      | Descrição                          |
+| ------------------------- | --------- | ---------------------------------- |
+| id_weather                | INTEGER   | Identificador único                |
+| data                      | DATE      | Data da medição                    |
+| hora                      | TIME      | Hora da medição                    |
+| temperatura               | FLOAT64   | Temperatura (°C)                   |
+| humidade                  | FLOAT64   | Umidade relativa (%)               |
+| dia_semana                | INTEGER   | Dia da semana (1–7)                |
+| periodo_dia               | STRING    | manhã/tarde/noite/madrugada        |
+| classificacao_temperatura | STRING    | muito_quente/quente/agradavel/frio |
+| ingestion_timestamp       | TIMESTAMP | Timestamp de ingestão              |
+
+---
+
+## 🔒 Segurança
+
+* Credenciais via variáveis de ambiente
+* `.json` fora do versionamento
+* `.gitignore` configurado
+* Conexões seguras
+
+---
+
+## ✅ Testes Implementados
+
+* Teste de singularidade (ID único)
+* Teste de não nulidade
+* Teste de valores aceitos
+
+---
+
+## 🎯 Próximos Passos
+
+* [ ] Implementar testes unitários completos
+* [ ] Criar dashboard no Looker Studio
+* [ ] Configurar alertas de falha
+* [ ] Publicar documentação com dbt docs
+
+---
+
+## 📝 Licença
+
+MIT License
+
+---
+
+## 👩‍💻 Autora
+
+**Amanda Santiago**
+Engenheira de Dados
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/Amandasanttiago)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge\&logo=linkedin\&logoColor=white)](https://linkedin.com/in/amanda-santiago)
+
+---
+
+⭐ Se este projeto te ajudou, considere dar uma estrela!
